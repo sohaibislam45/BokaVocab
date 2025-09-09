@@ -2,11 +2,14 @@ const loadLesson = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all")
         .then(res => res.json())
         .then(json => {
-            // console.log(json);
             displayLessons(json.data);
         })
 }
 
+const removeActive=()=>{
+    const lessonBtn=document.querySelectorAll(".lesson-btn");
+    lessonBtn.forEach(btn=>btn.classList.remove("active"));
+}
 const loadLevelWord = (id) => {
     const url = `https://openapi.programming-hero.com/api/level/${id}`;
     fetch(url)
@@ -17,7 +20,10 @@ const loadLevelWord = (id) => {
             if (messageDiv) {
                 messageDiv.style.display = 'none';
             }
-
+            // class add for button active effect
+            removeActive();
+            const lessonBtn=document.getElementById(`lesson-btn-${id}`)
+            lessonBtn.classList.add('active');
             displayLevelWord(json.data);
         });
 };
@@ -44,9 +50,9 @@ const displayLevelWord = (words) => {
         <!-- card design -->
         <div class="card max-w-[545px] min-h-[370px] shadow-md">
             <div class="text-center pt-14">
-                <h1 class="text-4xl font-semibold mb-5">${word.word}</h1>
+                <h1 class="text-4xl font-semibold mb-5">${word.word?word.word:'শব্দ পাওয়া যায় নি'}</h1>
                 <p class="text-lg font-normal mb-7">Meaning / Pronunciation</p>
-                <h1 class="text-4xl font-semibold bangla-font">${word.meaning}/ ${word.pronunciation}</h1>
+                <h1 class="text-4xl font-semibold bangla-font">${word.meaning?word.meaning:'শব্দের অর্থ পাওয়া যায় নি'}/ ${word.pronunciation?word.pronunciation:'শব্দের উচ্চারণ পাওয়া যায় নি'}</h1>
             </div>
             <div class="flex justify-between items-center px-14 pt-9">
                 <button class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
@@ -70,7 +76,7 @@ const displayLessons = (lessons) => {
     for (let lesson of lessons) {
         const btnDiv = document.createElement("div");
         btnDiv.innerHTML = `
-            <button onclick="loadLevelWord(${lesson.level_no})" class="btn btn-outline btn-primary">
+            <button id="lesson-btn-${lesson.level_no}" onclick="loadLevelWord(${lesson.level_no})" class="btn btn-outline btn-primary lesson-btn">
                 <i class="fa-solid fa-book-open"></i> Lesson - ${lesson.level_no}
             </button>
         `;
