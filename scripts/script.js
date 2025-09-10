@@ -11,6 +11,7 @@ const removeActive=()=>{
     lessonBtn.forEach(btn=>btn.classList.remove("active"));
 }
 const loadLevelWord = (id) => {
+    manageLoading(true);
     const url = `https://openapi.programming-hero.com/api/level/${id}`;
     fetch(url)
         .then(res => res.json())
@@ -27,7 +28,62 @@ const loadLevelWord = (id) => {
             displayLevelWord(json.data);
         });
 };
+// for loading spinner
+const manageLoading=(status)=>{
+    if(status){
+        document.getElementById('spinner').classList.remove('hidden');
+        document.getElementById('word-container').classList.add('hidden');
+    } else{
+        document.getElementById('word-container').classList.remove('hidden');
+        document.getElementById('spinner').classList.add('hidden');
+    }
+}
 
+// for synonyms creation
+const createElement=(arr)=>{
+    const htmlElement=arr.map(el=>`<button class="btn font-normal bg-[#D7E4EF]">${el}</button>`);
+    return htmlElement.join(" ");
+}
+
+// for word details pop up modal
+const loadWordDetail=(id)=>{
+    const url=`https://openapi.programming-hero.com/api/word/${id}`
+    fetch(url)
+    .then(res=>res.json())
+    .then(data=>displayWordDetails(data.data))
+};
+
+
+// "word": "Cautious",
+//     "meaning": "সতর্ক",
+//     "pronunciation": "কশাস",
+//     "level": 2,
+//     "sentence": "Be cautious while crossing the road.",
+//     "points": 2,
+//     "partsOfSpeech": "adjective",
+//     "synonyms": [
+//       "careful",
+//       "alert",
+//       "watchful"
+//     ],
+//     "id": 3
+const displayWordDetails=(word)=>{
+    const detailsBox=document.getElementById('details-container');
+    detailsBox.innerHTML=`
+    <div class="modal-box shadow-none p-2">
+        <h1 class=" text-2xl font-semibold">${word.word} ( <i class="fa-solid fa-microphone-lines"></i> : ${word.pronunciation})</h1>
+        <p class="mt-8 mb-4 font-normal">Meaning:</p>
+        <p class="bangla-font text-2xl font-semibold mb-8">${word.meaning}</p>
+        <p class="font-semibold">Example:</p>
+        <p class="mb-8">${word.sentence}</p>
+        <p class="bangla-font font-medium">সমার্থক শব্দগুলো:</p>
+        <div class="mt-4">
+            ${createElement(word.synonyms)}
+        </div>
+    </div>
+    `
+    document.getElementById('show_modal').showModal();
+}
 
 const displayLevelWord = (words) => {
     const wordContainer = document.getElementById('word-container');
@@ -41,7 +97,9 @@ const displayLevelWord = (words) => {
             <p class="text-base mt-4 text-[#79716b] bangla-font">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
             <p class="text-4xl font-medium bangla-font mt-3">নেক্সট Lesson এ যান</p>
         </div>
-        `
+        `;
+        manageLoading(false);
+        return;
     }
 
     for (let word of words) {
@@ -55,7 +113,7 @@ const displayLevelWord = (words) => {
                 <h1 class="text-4xl font-semibold bangla-font">${word.meaning?word.meaning:'শব্দের অর্থ পাওয়া যায় নি'}/ ${word.pronunciation?word.pronunciation:'শব্দের উচ্চারণ পাওয়া যায় নি'}</h1>
             </div>
             <div class="flex justify-between items-center px-14 pt-9">
-                <button class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
+                <button onclick="loadWordDetail(${word.id})" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
                     <i class="fa-solid fa-circle-info text-[30px]"></i>
                 </button>
                 <button class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
@@ -66,7 +124,8 @@ const displayLevelWord = (words) => {
         `;
         wordContainer.appendChild(card);
     }
-}
+    manageLoading(false);
+};
 
 
 const displayLessons = (lessons) => {
@@ -82,6 +141,6 @@ const displayLessons = (lessons) => {
         `;
         levelContainer.appendChild(btnDiv);
     }
-}
+};
 
 loadLesson();

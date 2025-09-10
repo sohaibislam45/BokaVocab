@@ -86,6 +86,11 @@
         </div>
     </section>
 
+        <!-- loading animation section -->
+     <section id="spinner" class="flex justify-center items-center pt-20 pb-30 hidden">
+        <span class="loading loading-dots loading-xl"></span>
+     </section>
+
     <!-- lesson select section -->
     <section id="lesson-section" class="max-w-[1760px] min-h-[200px] bg-[#f8f8f8] rounded-2xl mb-[200px] mx-auto">
         <div id="lesson-message" class="flex flex-col justify-center items-center text-center min-h-[200px]">
@@ -128,6 +133,20 @@
             </div>
         </nav>
     </footer>
+
+    <!-- Open the modal using ID.showModal() method -->
+<!-- <button class="btn" onclick="my_modal_5.showModal()">open modal</button> -->
+<dialog id="show_modal" class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box">
+    <div id="details-container" class="flex justify-center items-center"></div>
+    <div class="modal-action">
+      <form method="dialog">
+        <!-- if there is a button in form, it will close the modal -->
+        <button class="btn bg-[#422AD5] rounded-xl text-white">Complete Learning</button>
+      </form>
+    </div>
+  </div>
+</dialog>
 
     <!-- javascript connect link -->
     <script src="scripts/script.js"></script>
