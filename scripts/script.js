@@ -6,70 +6,84 @@ const loadLesson = () => {
         })
 }
 
-const removeActive=()=>{
-    const lessonBtn=document.querySelectorAll(".lesson-btn");
-    lessonBtn.forEach(btn=>btn.classList.remove("active"));
+const removeActive = () => {
+    const lessonBtn = document.querySelectorAll(".lesson-btn");
+    lessonBtn.forEach(btn => btn.classList.remove("active"));
 }
 const loadLevelWord = (id) => {
     manageLoading(true);
     const url = `https://openapi.programming-hero.com/api/level/${id}`;
+
     fetch(url)
-        .then(res => res.json())
-        .then(json => {
-            // hide only the lesson message part
-            const messageDiv = document.getElementById('lesson-message');
-            if (messageDiv) {
-                messageDiv.style.display = 'none';
-            }
-            // class add for button active effect
-            removeActive();
-            const lessonBtn=document.getElementById(`lesson-btn-${id}`)
-            lessonBtn.classList.add('active');
-            displayLevelWord(json.data);
-        });
+      .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+          return res.json();
+      })
+      .then(json => {
+          // defensive: ensure data is an array
+          const data = Array.isArray(json.data) ? json.data : (Array.isArray(json) ? json : []);
+
+          // hide only the lesson message part (guarded)
+          const messageDiv = document.getElementById('lesson-message');
+          if (messageDiv) messageDiv.style.display = 'none';
+
+          // remove active from others and add to clicked
+          removeActive();
+          const lessonBtn = document.getElementById(`lesson-btn-${id}`);
+          if (lessonBtn) lessonBtn.classList.add('active');
+
+          // If data exists show, otherwise display empty state
+          displayLevelWord(data);
+      })
+      .catch(err => {
+          console.error('Error loading lesson:', err);
+          // show user friendly message
+          const wordContainer = document.getElementById('word-container');
+          if (wordContainer) {
+              wordContainer.innerHTML = `
+                <div class="col-span-full flex justify-center">
+                  <div class="w-full max-w-[800px] bg-[#fff1f0] rounded-2xl text-center p-6">
+                    <p class="text-base text-[#7a2a2a]">Failed to load lesson. Please try again.</p>
+                    <p class="text-sm text-[#666] mt-2">${err.message}</p>
+                  </div>
+                </div>`;
+          }
+      })
+      .finally(() => {
+          // ALWAYS stop the spinner
+          manageLoading(false);
+      });
 };
+
 // for loading spinner
-const manageLoading=(status)=>{
-    if(status){
+const manageLoading = (status) => {
+    if (status) {
         document.getElementById('spinner').classList.remove('hidden');
         document.getElementById('word-container').classList.add('hidden');
-    } else{
+    } else {
         document.getElementById('word-container').classList.remove('hidden');
         document.getElementById('spinner').classList.add('hidden');
     }
 }
 
 // for synonyms creation
-const createElement=(arr)=>{
-    const htmlElement=arr.map(el=>`<button class="btn font-normal bg-[#D7E4EF]">${el}</button>`);
+const createElement = (arr) => {
+    const htmlElement = arr.map(el => `<button class="btn font-normal bg-[#D7E4EF]">${el}</button>`);
     return htmlElement.join(" ");
 }
 
 // for word details pop up modal
-const loadWordDetail=(id)=>{
-    const url=`https://openapi.programming-hero.com/api/word/${id}`
+const loadWordDetail = (id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`
     fetch(url)
-    .then(res=>res.json())
-    .then(data=>displayWordDetails(data.data))
+        .then(res => res.json())
+        .then(data => displayWordDetails(data.data))
 };
 
 
-// "word": "Cautious",
-//     "meaning": "সতর্ক",
-//     "pronunciation": "কশাস",
-//     "level": 2,
-//     "sentence": "Be cautious while crossing the road.",
-//     "points": 2,
-//     "partsOfSpeech": "adjective",
-//     "synonyms": [
-//       "careful",
-//       "alert",
-//       "watchful"
-//     ],
-//     "id": 3
-const displayWordDetails=(word)=>{
-    const detailsBox=document.getElementById('details-container');
-    detailsBox.innerHTML=`
+const displayWordDetails = (word) => {
+    const detailsBox = document.getElementById('details-container');
+    detailsBox.innerHTML = `
     <div class="modal-box shadow-none p-2">
         <h1 class=" text-2xl font-semibold">${word.word} ( <i class="fa-solid fa-microphone-lines"></i> : ${word.pronunciation})</h1>
         <p class="mt-8 mb-4 font-normal">Meaning:</p>
@@ -85,32 +99,32 @@ const displayWordDetails=(word)=>{
     document.getElementById('show_modal').showModal();
 }
 
-const displayLevelWord = (words) => {
-    const wordContainer = document.getElementById('word-container');
-    wordContainer.innerHTML = '';
+const displayLevelWord = (words, container = document.getElementById('word-container')) => {
+    container.innerHTML = '';
 
-    // if wordcontainer have no content
     if (words.length === 0) {
-        wordContainer.innerHTML = `
-        <div class="col-span-full justify-self-center max-w-[1760px] mx-auto bg-[#f8f8f8] rounded-2xl flex flex-col justify-center items-center text-center min-h-[340px] p-6">
-        <img src="assets/alert-error.png" alt="">
-            <p class="text-base mt-4 text-[#79716b] bangla-font">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
-            <p class="text-4xl font-medium bangla-font mt-3">নেক্সট Lesson এ যান</p>
+        container.innerHTML = `
+        <div class="col-span-full flex justify-center">
+            <div class="w-full max-w-[1160px] sm:max-w-[1360px] md:max-w-[1560px] lg:max-w-[1760px] mx-auto
+                    bg-[#f8f8f8] rounded-2xl text-center min-h-[340px] p-6">
+                <img src="assets/alert-error.png" alt="" class="mx-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px]">
+                <p class="text-sm sm:text-base mt-4 text-[#79716b] bangla-font">কোন ফলাফল পাওয়া যায় নি।</p>
+                <p class="text-xl sm:text-2xl md:text-4xl font-medium bangla-font mt-3">অন্য শব্দ দিয়ে চেষ্টা করুন</p>
+            </div>
         </div>
+
         `;
-        manageLoading(false);
         return;
     }
 
     for (let word of words) {
         const card = document.createElement("div");
         card.innerHTML = `
-        <!-- card design -->
         <div class="card max-w-[545px] min-h-[370px] shadow-md">
             <div class="text-center pt-14">
-                <h1 class="text-4xl font-semibold mb-5">${word.word?word.word:'শব্দ পাওয়া যায় নি'}</h1>
+                <h1 class="text-4xl font-semibold mb-5">${word.word || 'শব্দ পাওয়া যায় নি'}</h1>
                 <p class="text-lg font-normal mb-7">Meaning / Pronunciation</p>
-                <h1 class="text-4xl font-semibold bangla-font">${word.meaning?word.meaning:'শব্দের অর্থ পাওয়া যায় নি'}/ ${word.pronunciation?word.pronunciation:'শব্দের উচ্চারণ পাওয়া যায় নি'}</h1>
+                <h1 class="text-4xl font-semibold bangla-font">${word.meaning || 'অর্থ পাওয়া যায় নি'} / ${word.pronunciation || 'উচ্চারণ পাওয়া যায় নি'}</h1>
             </div>
             <div class="flex justify-between items-center px-14 pt-9">
                 <button onclick="loadWordDetail(${word.id})" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
@@ -120,12 +134,11 @@ const displayLevelWord = (words) => {
                     <i class="fa-solid fa-volume-low text-[30px]"></i>
                 </button>
             </div>
-        </div>
-        `;
-        wordContainer.appendChild(card);
+        </div>`;
+        container.appendChild(card);
     }
-    manageLoading(false);
 };
+
 
 
 const displayLessons = (lessons) => {
@@ -144,3 +157,25 @@ const displayLessons = (lessons) => {
 };
 
 loadLesson();
+document.getElementById('btn-search').addEventListener('click', () => {
+    const inputWord = document.getElementById('input-search').value.toLowerCase().trim();
+
+    fetch("https://openapi.programming-hero.com/api/words/all")
+        .then(res => res.json())
+        .then(data => {
+            const allwords = data.data;
+            const filterword = allwords.filter(word => word.word.toLowerCase().includes(inputWord));
+
+            // hide lesson section
+            document.getElementById('lesson-section').classList.add('hidden');
+
+            // show search section
+            const searchSection = document.getElementById('search-section');
+            searchSection.classList.remove('hidden');
+
+            // render search results
+            const searchContainer = document.getElementById('search-container');
+            searchContainer.innerHTML = '';
+            displayLevelWord(filterword, searchContainer);
+        });
+});
