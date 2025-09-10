@@ -113,8 +113,8 @@ const displayLevelWord = (words, container = document.getElementById('word-conta
             <div class="w-full max-w-[1160px] sm:max-w-[1360px] md:max-w-[1560px] lg:max-w-[1760px] mx-auto
                     bg-[#f8f8f8] rounded-2xl text-center min-h-[340px] p-6">
                 <img src="assets/alert-error.png" alt="" class="mx-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px]">
-                <p class="text-sm sm:text-base mt-4 text-[#79716b] bangla-font">কোন ফলাফল পাওয়া যায় নি।</p>
-                <p class="text-xl sm:text-2xl md:text-4xl font-medium bangla-font mt-3">অন্য শব্দ দিয়ে চেষ্টা করুন</p>
+                <p class="text-sm sm:text-base mt-4 text-[#79716b] bangla-font">দুঃখিত! এই Lesson টিতে এখনো কিছু যোগ করা হয় নি</p>
+                <p class="text-xl sm:text-2xl md:text-4xl font-medium bangla-font mt-3">দয়া করে অন্য Lesson এ যান</p>
             </div>
         </div>
 
