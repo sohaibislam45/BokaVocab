@@ -48,8 +48,19 @@ const loadLevelWord = (id) => {
             const lessonBtn = document.getElementById(`lesson-btn-${id}`);
             if (lessonBtn) lessonBtn.classList.add("active");
 
-            // show lesson words
-            displayLevelWord(data);
+            if (data.length === 0) {
+                const wordContainer = document.getElementById("word-container");
+                wordContainer.innerHTML = `
+                <div class="col-span-full flex justify-center items-center min-h-[340px]">
+                    <div class="w-full max-w-[800px] bg-[#f8f8f8] rounded-2xl text-center p-6">
+                        <img class="mx-auto" src="assets/alert-error.png" alt="">
+                        <p class="text-base mt-4 text-[#79716b] bangla-font">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
+                        <p class="text-4xl font-medium bangla-font mt-3">নেক্সট Lesson এ যান</p>
+                    </div>
+                </div>`;
+            } else {
+                displayLevelWord(data);
+            }
         })
         .catch(err => {
             console.error("Error loading lesson:", err);
@@ -119,9 +130,9 @@ const displayLevelWord = (words, container = document.getElementById('word-conta
 
     if (words.length === 0) {
         container.innerHTML = `
-        <div class="col-span-full flex justify-center">
+        <div class="col-span-full flex justify-center items-center">
           <div class="w-full max-w-[800px] bg-[#f8f8f8] rounded-2xl text-center p-6">
-            <img src="assets/alert-error.png" alt="">
+            <img class="mx-auto" src="assets/alert-error.png" alt="">
             <p class="text-base mt-4 text-[#79716b] bangla-font">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
             <p class="text-4xl font-medium bangla-font mt-3">নেক্সট Lesson এ যান</p>
           </div>
@@ -142,7 +153,7 @@ const displayLevelWord = (words, container = document.getElementById('word-conta
                 <button onclick="loadWordDetail(${word.id})" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
                     <i class="fa-solid fa-circle-info text-[30px]"></i>
                 </button>
-                <button class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
+                <button onclick="pronounceWord('${word.word}')" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
                     <i class="fa-solid fa-volume-low text-[30px]"></i>
                 </button>
             </div>
@@ -201,8 +212,8 @@ document.getElementById('btn-search').addEventListener('click', () => {
             if (filterword.length === 0) {
                 searchContainer.innerHTML = `
                 <div class="col-span-full flex justify-center">
-                  <div class="w-full max-w-[800px] bg-[#f8f8f8] rounded-2xl text-center p-6">
-                    <img src="assets/alert-error.png" alt="">
+                  <div class="w-full max-w-[1760px] bg-[#f8f8f8] rounded-2xl text-center p-6">
+                    <img class="mx-auto" src="assets/alert-error.png" alt="">
                     <p class="text-base mt-4 text-[#79716b] bangla-font">কোন ফলাফল পাওয়া যায় নি।</p>
                     <p class="text-4xl font-medium bangla-font mt-3">অন্য শব্দ দিয়ে চেষ্টা করুন</p>
                   </div>
