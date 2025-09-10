@@ -6,6 +6,11 @@ const loadLesson = () => {
         })
 }
 
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
 const removeActive = () => {
     const lessonBtn = document.querySelectorAll(".lesson-btn");
     lessonBtn.forEach(btn => btn.classList.remove("active"));
@@ -130,7 +135,7 @@ const displayLevelWord = (words, container = document.getElementById('word-conta
                 <button onclick="loadWordDetail(${word.id})" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
                     <i class="fa-solid fa-circle-info text-[30px]"></i>
                 </button>
-                <button class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
+                <button onclick="pronounceWord('${word.word}')" class="btn w-[60px] h-[60px] bg-[#1a91ff1a] hover:bg-[#1a91ff70]">
                     <i class="fa-solid fa-volume-low text-[30px]"></i>
                 </button>
             </div>
