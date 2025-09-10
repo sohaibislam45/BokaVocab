@@ -184,3 +184,6 @@ document.getElementById('btn-search').addEventListener('click', () => {
             displayLevelWord(filterword, searchContainer);
         });
 });
+document.getElementById('login-btn').addEventListener('click',()=>{
+    alert("Unfortunately, we have no database. Login feature not workable for now!!");
+})
